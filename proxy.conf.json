@@ -1,0 +1,18 @@
+{
+  "/metro": {
+    "target": "https://produkte.metro.de",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/metro": ""
+    }
+  },
+  "/conalco": {
+    "target": "https://www.conalco.de",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/conalco": ""
+    }
+  }
+}
