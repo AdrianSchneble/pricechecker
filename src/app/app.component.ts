@@ -51,7 +51,7 @@ export class AppComponent {
   }
 
   setAmazonPriceFromUrl(urls: { amountInLiters: number; url: string; }[], product: ProductPricing): void {
-    this.setPriceFromUrl(urls, product, AMAZON_PRICE_SELECTOR, 'amazonPrice', true);
+    this.setPriceFromUrl(urls, product, AMAZON_PRICE_SELECTOR, 'amazonPrice');
   }
 
   setPriceFromUrl(urls: { amountInLiters: number; url: string; }[], product: ProductPricing, selector: string, priceReference: 'conalcoPrice' | 'metroPrice' | 'amazonPrice'): void {
