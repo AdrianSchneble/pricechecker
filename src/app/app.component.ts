@@ -54,25 +54,15 @@ export class AppComponent {
     this.setPriceFromUrl(urls, product, AMAZON_PRICE_SELECTOR, 'amazonPrice', true);
   }
 
-  setPriceFromUrl(urls: { amountInLiters: number; url: string; }[], product: ProductPricing, selector: string, priceReference: 'conalcoPrice' | 'metroPrice' | 'amazonPrice', log?: boolean): void {
+  setPriceFromUrl(urls: { amountInLiters: number; url: string; }[], product: ProductPricing, selector: string, priceReference: 'conalcoPrice' | 'metroPrice' | 'amazonPrice'): void {
     for (let urlObject of urls) {
       const response = this.http.request("GET", urlObject.url, { responseType: 'text' });
       response.subscribe({
         next: (html) => {
           const $ = cheerio.load(html);
           const price = $(selector).attr("content") || $(selector).text();
-          if (log) {
-            console.log(urlObject);
-            console.log(price)
-          }
           const pricePerLiter = Number(price.replace(/€/g, '').replace(/,/g, '.')) / urlObject.amountInLiters;
-          if (log) {
-            console.log(pricePerLiter)
-          }
           product[priceReference] = this.roundToTwoDecimals(Math.min(product[priceReference] ?? Number.POSITIVE_INFINITY, pricePerLiter));
-          if (log) {
-            console.log(product[priceReference])
-          }
         }
       })
     }
@@ -87,6 +77,7 @@ export class AppComponent {
   */
   async parseProductsFromDatabase(): Promise<Product[]> {
     return this.databaseService.getProducts().then((response: any) => {
+      console.log('Response:', response);
       let products: Product[] = [];
       for (let productFromDB of response) {
         let product: Product | undefined = products.find(search => productFromDB.ProductName === search.name);
@@ -100,6 +91,7 @@ export class AppComponent {
         }
         product[productFromDB.StoreName as 'Conalco' | 'Metro'].push(productListing);
       }
+      console.log('Discovered products from database:', products);
       return products;
     });
   }

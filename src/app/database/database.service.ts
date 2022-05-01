@@ -25,7 +25,9 @@ export class DatabaseService {
   }
 
   getProducts() {
-    return this.request('GET', `${environment.serverUrl}/products`);
+    let url: string = `${environment.serverUrl}/products`;
+    console.log(`Querying data from ${url} ...`);
+    return this.request('GET', url);
   }
 
 }
