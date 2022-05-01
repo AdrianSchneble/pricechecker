@@ -63,7 +63,8 @@ export class AppComponent {
           const price = $(selector).attr("content") || $(selector).text();
           const pricePerLiter = Number(price.replace(/€/g, '').replace(/,/g, '.')) / urlObject.amountInLiters;
           product[priceReference] = this.roundToTwoDecimals(Math.min(product[priceReference] ?? Number.POSITIVE_INFINITY, pricePerLiter));
-        }
+        },
+        error: (error) => console.log(error)
       })
     }
   }
