@@ -14,5 +14,13 @@
     "pathRewrite": {
       "^/conalco": ""
     }
+  },
+  "/amazon": {
+    "target": "https://www.amazon.de",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/amazon": ""
+    }
   }
 }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { METRO_PRICE_SELECTOR, CONALCO_PRICE_SELECTOR } from './products';
+import { METRO_PRICE_SELECTOR, CONALCO_PRICE_SELECTOR, AMAZON_PRICE_SELECTOR } from './products';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { ProductPricing } from './ProductPricing';
@@ -34,9 +34,10 @@ export class AppComponent {
       for (let productData of productsFromDatabase) {
         let product = new ProductPricing(productData.name);
         this.products.push(product);
-        this.setConalcoPriceFromUrl(productData.Conalco, product);
+        // this.setConalcoPriceFromUrl(productData.Conalco, product);
         // The METRO website is unfortunately built dynamically with Javascript, such that we can't simply search the price with a CSS selector
         let metroPrice = undefined; //product.metro ? this.queryPriceFromUrl(product.metro, METRO_PRICE_SELECTOR) : undefined
+        this.setAmazonPriceFromUrl(productData.Amazon, product);
       }
     });
   }
@@ -49,18 +50,30 @@ export class AppComponent {
     this.setPriceFromUrl(urls, product, METRO_PRICE_SELECTOR, 'metroPrice');
   }
 
-  setPriceFromUrl(urls: { amountInLiters: number; url: string; }[], product: ProductPricing, selector: string, priceReference: 'conalcoPrice' | 'metroPrice'): void {
+  setAmazonPriceFromUrl(urls: { amountInLiters: number; url: string; }[], product: ProductPricing): void {
+    this.setPriceFromUrl(urls, product, AMAZON_PRICE_SELECTOR, 'amazonPrice', true);
+  }
+
+  setPriceFromUrl(urls: { amountInLiters: number; url: string; }[], product: ProductPricing, selector: string, priceReference: 'conalcoPrice' | 'metroPrice' | 'amazonPrice', log?: boolean): void {
     for (let urlObject of urls) {
-      console.log(urlObject.url)
       const response = this.http.request("GET", urlObject.url, { responseType: 'text' });
       response.subscribe({
         next: (html) => {
           const $ = cheerio.load(html);
-          const price = $(selector).attr("content");
-          const pricePerLiter = Number(price) / urlObject.amountInLiters;
+          const price = $(selector).attr("content") || $(selector).text();
+          if (log) {
+            console.log(urlObject);
+            console.log(price)
+          }
+          const pricePerLiter = Number(price.replace(/€/g, '').replace(/,/g, '.')) / urlObject.amountInLiters;
+          if (log) {
+            console.log(pricePerLiter)
+          }
           product[priceReference] = this.roundToTwoDecimals(Math.min(product[priceReference] ?? Number.POSITIVE_INFINITY, pricePerLiter));
-        },
-        error: (error) => console.log(error)
+          if (log) {
+            console.log(product[priceReference])
+          }
+        }
       })
     }
   }
@@ -95,7 +108,8 @@ export class AppComponent {
     return {
       name: productName,
       Metro: [],
-      Conalco: []
+      Conalco: [],
+      Amazon: []
     }
   }
 

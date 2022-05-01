@@ -28,12 +28,14 @@
       <td>Produkt</td>
       <td>Conalco-Preis</td>
       <td>Metro-Preis</td>
+      <td>Amazon-Preis</td>
     </thead>
     <tbody>
       <tr *ngFor="let product of products">
         <td>{{product.name}}</td>
         <td *ngIf="product.conalcoPrice; else productMissing">{{ product.conalcoPrice }}</td>
         <td *ngIf="product.metroPrice; else productMissing">{{ product.metroPrice }}</td>
+        <td *ngIf="product.amazonPrice; else productMissing">{{ product.amazonPrice }}</td>
         <ng-template #productMissing>
           <td>N/A</td>
         </ng-template>
