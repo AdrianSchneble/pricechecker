@@ -1,0 +1,7 @@
+services:
+  pricechecker:
+    build: .
+    volumes:
+      - .:/usr/src/pricechecker
+    ports:
+      - 80:80
